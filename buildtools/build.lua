@@ -75,6 +75,6 @@ tmpfile:write(luaout)
 tmpfile:close()
 
 print("Trying to build project with Luna...")
-assert(os.execute("cat " .. tmpname .. "|luna - " .. outfilename), "Building failed! You can try to build " .. tmpname .. " manually")
+assert(os.execute("cat " .. tmpname .. "|luna - " .. outfilename)==0, "Building failed! You can try to build " .. tmpname .. " manually")
 
 print("\r\nBuilding successful!")

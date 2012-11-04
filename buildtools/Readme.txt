@@ -17,12 +17,12 @@ License:
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 What is this tool?
-	The TI-Nspire project builder is a tool that allows you too easily build projects for the TI-Nspire that consists of many files.
-	It ultilizes a C-like include system, including files is as easy as 
+	The TI-Nspire project builder is a tool that allows you to easily build Lua projects for the TI-Nspire that consists of many files.
+	It uses a C-like include system, and including files is as easy as :
 		--include "filename.lua"
-	Also, the builder works recursively; you can have includes in file you include.
-	The builder will also check every file for syntax errors, and give detailed info on it and where it can be found.
-	After all that is done, it will try to build the project with Luna. If it fails to do so you can always build the output file yourself
+	Also, the builder works recursively : you can have includes in file you include.
+	The builder will also check every file for syntax errors, and give detailed info on them, and where they can be found, if any.
+	When all that is done, it will try to build the project with Luna. If it fails to do so, you can always build the output file yourself
 	
 Usage:
 

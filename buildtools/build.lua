@@ -1,10 +1,10 @@
-#!/usr/bin/lua
+#!/usr/bin/env lua
 
-BUILDERV = 0.2
-
+BUILDERV = 0.5
+MAX_FILES = 100
 
 print("TI-Nspire project builder v" .. BUILDERV)
-print("(C) 2012 Jim Bauwens\r\n")
+print("(C) 2015 Jim Bauwens\r\n")
 
 
 if #arg<2 then
@@ -31,20 +31,20 @@ function assert(bool, errormsg)
 end
 
 function getPath(filename)
-	local a,b,path = filename:find( "(.*%/).*%..*")
+	local a, b, path = filename:find("(.*%/).*%..*")
 	return path or ""
 end
 
 function processFile(filename, path)
 	luafiles = luafiles + 1
-	assert(luafiles<=100, "Too many files to include! Are you sure you don't have an include loop?")
+	assert(luafiles <= MAX_FILES, "Too many files to include! Are you sure you don't have an include loop?")
 	
 	local out = ""
 	
 	local file = assert(io.open(filename, "r"), filename .. " could not be read! Aborting.")
 	print("Processing " .. filename)
 	
-	assert(os.execute("luac -p " .. filename) == 0, filename .. " contains a syntax error! Aborting.")
+	--assert(os.execute("luac -p " .. filename) == 0, filename .. " contains a syntax error! Aborting.")
 	
 	
 	local filecontent = file:read("*a")
@@ -60,10 +60,31 @@ function processFile(filename, path)
 	end
 	
 	out = filecontent:gsub("%-%-include \"([^\"]*)\"", function (f) local f = path .. f return processFile(f, getPath(f)) end)
+	
 	return out
 end
 
+local macroTable = {}
+function addMacro(pattern,content)
+	print("adding", pattern, content)
+	macroTable[pattern] = content
+	
+	return ""
+end
+
+function processMacros(luacode)
+	luacode = luacode:gsub("%-%-define \"([^\"]*)\" \"([^\"]*)\"", addMacro)
+	
+	for pattern, content in pairs(macroTable) do
+		print("Processing macro", pattern)
+		luacode = luacode:gsub(pattern, content)
+	end
+	
+	return luacode
+end
+
 luaout = processFile(buildfilename, getPath(buildfilename))
+luaout = processMacros(luaout)
 
 print("\r\nSuccesully loaded " .. luafiles .. " lua files")
 
@@ -73,6 +94,8 @@ print("Creating temp file "..tmpname)
 local tmpfile = assert(io.open(tmpname, "w"), "Failed to create temp file. Are you sure you have permissions to the current directory ?")
 tmpfile:write(luaout)
 tmpfile:close()
+
+--os.exit(0)
 
 print("Trying to build project with Luna...")
 assert(os.execute("cat " .. tmpname .. "|luna - " .. outfilename)==0, "Building failed! You can try to build " .. tmpname .. " manually")

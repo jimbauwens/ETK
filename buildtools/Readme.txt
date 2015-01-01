@@ -1,5 +1,5 @@
-TI-Nspire Project Builder v0.2
-(C) 2012 Jim Bauwens
+TI-Nspire Project Builder v0.5
+(C) 2014 Jim Bauwens
 Part of the ETK project.
 
 License:
@@ -23,6 +23,23 @@ What is this tool?
 	Also, the builder works recursively : you can have includes in file you include.
 	The builder will also check every file for syntax errors, and give detailed info on them, and where they can be found, if any.
 	When all that is done, it will try to build the project with Luna. If it fails to do so, you can always build the output file yourself
+
+	The builder now allows you to define constants and macro’s using —define:
+	
+	--define "LOL" "'Life of links'"
+	print("LOL") -- prints Life of links
+	
+	You can also use Lua patterns. For example, to simulate string indexing you could use the following snippit:
+	--define "(%w+)%[%~(%w+)%]" "%1:sub(%2, %2)"
+	
+	This would allow you to do something as
+	
+	local myString = "ETK"
+	
+	for i=1, #myString do
+		print(myString[~i])
+	end
+	
 	
 Usage:
 

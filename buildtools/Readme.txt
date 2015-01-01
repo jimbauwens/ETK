@@ -1,5 +1,5 @@
 TI-Nspire Project Builder v0.5
-(C) 2014 Jim Bauwens
+(C) 2015 Jim Bauwens
 Part of the ETK project.
 
 License:

@@ -72,6 +72,7 @@ function addMacro(pattern,content)
 	return ""
 end
 
+-- todo : handle spaces in the middle of patterns... Not sure how though.
 function processMacros(luacode)
 	luacode = luacode:gsub("%-%-define \"([^\"]*)\" \"([^\"]*)\"", addMacro)
 	
@@ -98,6 +99,6 @@ tmpfile:close()
 --os.exit(0)
 
 print("Trying to build project with Luna...")
-assert(os.execute("cat " .. tmpname .. "|luna - " .. outfilename)==0, "Building failed! You can try to build " .. tmpname .. " manually")
+assert(os.execute("cat " .. tmpname .. "|luna - " .. outfilename), "Building failed! You can try to build " .. tmpname .. " manually")
 
 print("\r\nBuilding successful!")

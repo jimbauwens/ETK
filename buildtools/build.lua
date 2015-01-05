@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 
-BUILDERV = 0.5
+BUILDERV = 0.6
 MAX_FILES = 100
 
 print("TI-Nspire project builder v" .. BUILDERV)
@@ -66,18 +66,35 @@ end
 
 local macroTable = {}
 function addMacro(pattern,content)
-	print("adding", pattern, content)
+	--print("adding", pattern, content)
 	macroTable[pattern] = content
-	
 	return ""
 end
 
--- todo : handle spaces in the middle of patterns... Not sure how though.
+-- replace without patterns
+function string.replace(str, haystack, needle)
+	haystack = haystack:gsub("(%W)","%%%1") -- escape patterns
+	needle = needle:gsub( "%%", "%%%1" )
+	return str:gsub(haystack, needle)
+end
+
+-- todo? : handle spaces in the middle of patterns... Not sure how though.
 function processMacros(luacode)
 	luacode = luacode:gsub("%-%-define \"([^\"]*)\" \"([^\"]*)\"", addMacro)
 	
+	print(" - Pre-processing macros...")
 	for pattern, content in pairs(macroTable) do
-		print("Processing macro", pattern)
+		for k, v in pairs(macroTable) do
+			if pattern ~= k and k:match(pattern) then
+				local newKey = k:replace(pattern, content)
+				macroTable[newKey] = v
+				macroTable[k] = nil
+				macroTable[pattern] = nil
+			end
+		end
+	end
+	print(" - Processing macros...")
+	for pattern, content in pairs(macroTable) do
 		luacode = luacode:gsub(pattern, content)
 	end
 	

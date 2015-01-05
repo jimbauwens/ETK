@@ -1,6 +1,5 @@
 --Lua variable pattern
---superdefine "__LuaVar__" "[%w%._%[%]]+"
--- Jim, go handle that in build.lua then remove this line :P
+--define "__LuaVar__" "[%w%._%[%]]+"
 
 --Lambda style!
 --define "λ(.-)->(.-);" "(function (%1) return %2 end)"
@@ -33,11 +32,12 @@ local myString = [[
 local a = 0
 a++
 print(a)
+a-=2
+print(a)
 
 newStringA = myString:gsub("(.)", λ x -> x..x;)
 print(newStringA)
 
---newStringB = myString:gsub("()", λ x -> myString:sub(x,x);)
 newStringB = myString:gsub("()", λ x -> myString[~x];) 
 print(newStringB)
 

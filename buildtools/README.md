@@ -1,6 +1,6 @@
-#TI-Nspire Project Builder v0.6 (alpha)
-(C) 2015 Jim Bauwens  
-Part of the ETK project.
+#TI-Nspire Lua Project Builder v0.6 (alpha)
+ (C) 2015 - The ETK team,
+ Jim Bauwens, Adrien 'Adriweb' Bertrand
 
 ##License
 	This program is free software: you can redistribute it and/or modify
@@ -56,6 +56,8 @@ for i=1, #myString do
 	print(myString[~i]) -- prints each letter
 end
 ```
+
+Examples are available in the `tests` folder.
 
 #Usage:
 

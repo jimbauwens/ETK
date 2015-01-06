@@ -1,5 +1,5 @@
 #TI-Nspire Lua Project Builder v0.6 (alpha)
- (C) 2015 - The ETK team,
+ (C) 2015 - The ETK team,  
  Jim Bauwens, Adrien 'Adriweb' Bertrand
 
 ##License

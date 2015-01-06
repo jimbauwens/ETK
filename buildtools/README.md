@@ -1,4 +1,4 @@
-#TI-Nspire Project Builder v0.5
+#TI-Nspire Project Builder v0.6 (alpha)
 (C) 2015 Jim Bauwens  
 Part of the ETK project.
 

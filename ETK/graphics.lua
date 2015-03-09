@@ -1,7 +1,7 @@
 ----------------------------------
 -- ETK Graphics                 --
 -- Some flags and functions     --
--- for painting                 --
+-- for painting and more        --
 --                              --
 -- (C) 2015 Jim Bauwens         --
 -- Licensed under the GNU GPLv3 --

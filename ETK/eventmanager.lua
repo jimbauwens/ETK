@@ -35,18 +35,18 @@ do
 	local triggeredEvent
 	
 	local eventDistributer = function (...)
-        local currentScreen = rs:peekScreen()
+		local currentScreen = rs:peekScreen()
 		local eventHandler = currentScreen[triggeredEvent]
 		
 		if eventHandler then
-            eventHandler(currentScreen, ...)
-        end
+			eventHandler(currentScreen, ...)
+		end
 		
 		local genericEventHandler = currentScreen.onEvent
 		if genericEventHandler then
 			genericEventHandler(currentScreen, triggeredEvent, eventHandler, ...)
 		end
-    end
+	end
 	
 	eventLinker.__index = function (on, event)
 		triggeredEvent = event	

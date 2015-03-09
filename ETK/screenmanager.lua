@@ -1,8 +1,17 @@
+----------------------------------
+-- ETK Screenmanager            --
+-- stuff and stuff I guess      --
+-- cookies                      --
+--                              --
+-- (C) 2015 Jim Bauwens         --
+-- Licensed under the GNU GPLv3 --
+----------------------------------
+
 do etk.RootScreen = {}
 	local RootScreen = etk.RootScreen
 	local eg = etk.graphics
 
-    local x, y = 0, 0
+	local x, y = 0, 0
 	
 	---------------------
 	-- Screen handling --
@@ -31,13 +40,13 @@ do etk.RootScreen = {}
 	-- Dimension and position --
 	----------------------------
 	
-    function RootScreen:getDimension()
-        return eg.viewPortWidth, eg.viewPortHeight
-    end
-    
-    function RootScreen:getPosition()
-        return x, y
-    end	
+	function RootScreen:getDimension()
+		return eg.viewPortWidth, eg.viewPortHeight
+	end
+	
+	function RootScreen:getPosition()
+		return x, y
+	end	
 end
 
 ------------------
@@ -47,31 +56,31 @@ end
 do Screen = class()
 	local eg = etk.graphics
 	
-    function Screen:init(parent, position, dimension)
+	function Screen:init(parent, position, dimension)
 		self.parent = parent
-        self.position = position
-        self.dimension = dimension
+		self.position = position
+		self.dimension = dimension
 		
 		self.children = {}
-    end
+	end
 
 	--------------------------------
 	-- Dimension helper functions --
 	--------------------------------
 
-    function Screen:getDimension()
-        local parentWidth, parentHeight = self.parent:getDimension()
+	function Screen:getDimension()
+		local parentWidth, parentHeight = self.parent:getDimension()
 		
-        return self.dimension:get(parentWidth, parentHeight, eg.dimensionsChanged)
-    end
-    
-    function Screen:getPosition()
-        local parentX, parentY = self.parent:getPosition()
-        local parentWidth, parentHeight = self.parent:getDimension()
-        local width, height = self:getDimension()
-        
-        return self.position:get(parentX, parentY, parentWidth, parentHeight, width, height, eg.dimensionsChanged)
-    end
+		return self.dimension:get(parentWidth, parentHeight, eg.dimensionsChanged)
+	end
+	
+	function Screen:getPosition()
+		local parentX, parentY = self.parent:getPosition()
+		local parentWidth, parentHeight = self.parent:getDimension()
+		local width, height = self:getDimension()
+		
+		return self.position:get(parentX, parentY, parentWidth, parentHeight, width, height, eg.dimensionsChanged)
+	end
 	
 	-------------------
 	-- Screen events --
@@ -123,7 +132,7 @@ do View = class(Screen)
 	function View:init(args)
 		args = args or {}
 		
-		local parent    = args.parent   or etk.RootScreen
+		local parent	= args.parent   or etk.RootScreen
 		local dimension = args.dimension or Dimension()
 		local position  = args.position  or Position()
 		

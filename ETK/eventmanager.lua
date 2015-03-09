@@ -2,7 +2,7 @@
 -- ETK Event Manager            --
 -- Handle the events!           --
 --                              --
--- (C) 2013 Jim Bauwens         --
+-- (C) 2015 Jim Bauwens         --
 -- Licensed under the GNU GPLv3 --
 ----------------------------------
 
@@ -13,6 +13,7 @@ do
 	local em = etk.eventmanager
 	local eh = etk.eventhandlers
 	local eg = etk.graphics
+	local rs = etk.RootScreen
 	
 	-----------
 	-- TOOLS --
@@ -31,18 +32,51 @@ do
 	-------------------
 	
 	local eventLinker = {}
+	local triggeredEvent
+	
+	local eventDistributer = function (...)
+        local currentScreen = rs:peekScreen()
+		local eventHandler = currentScreen[triggeredEvent]
+		
+		if eventHandler then
+            eventHandler(currentScreen, ...)
+        end
+		
+		local genericEventHandler = currentScreen.onEvent
+		if genericEventHandler then
+			genericEventHandler(currentScreen, triggeredEvent, eventHandler, ...)
+		end
+    end
+	
 	eventLinker.__index = function (on, event)
-		return eh[event]
+		triggeredEvent = event	
+		return eventDistributer
 	end
 	
 	setmetatable(on, eventLinker)
 	
-	eh.activate = function () 
+	on.activate = function () 
 		eg.needsFullRedraw = true
 	end
 	
-	eh.getFocus = function ()
+	on.getFocus = function ()
 		eg.needsFullRedraw = true
+	end
+	
+	on.resize = function (width, height)
+		Logger.Log("Viewport dimensions changed to %dx%d", width, height)
+	
+		eg.dimensionsChanged = true
+		eg.needsFullRedraw = true
+		
+		eg.viewPortWidth  = width
+		eg.viewPortHeight = height
+	end
+	
+	on.paint = function(gc)
+		eventLinker.__index(on, "paint")(gc)
+		
+		eg.dimensionsChanged = false
 	end
 	
 end

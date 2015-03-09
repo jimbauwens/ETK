@@ -1,9 +1,9 @@
 ----------------------------------
--- ETK Event Manager            --
+-- ETK Graphics                 --
 -- Some flags and functions     --
 -- for painting                 --
 --                              --
--- (C) 2013 Jim Bauwens         --
+-- (C) 2015 Jim Bauwens         --
 -- Licensed under the GNU GPLv3 --
 ----------------------------------
 
@@ -12,6 +12,11 @@ do
 	local eg = etk.graphics
 	
 	eg.needsFullRedraw = true
+	eg.dimensionsChanged = true
+	
+	eg.viewPortWidth  = 318
+	eg.viewPortHeight = 212
+	
 	eg.areaToRedraw = {0, 0, 0, 0}
 	
 	

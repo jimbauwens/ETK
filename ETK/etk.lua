@@ -122,7 +122,7 @@ do
 		}
 		closeButton.onAction = function()
 			input2.value = "Hi " .. nameInput.value
-			etk.RootScreen.popScreen();
+			etk.RootScreen:popScreen();
 		end
 		
 		dialog:addChildren(nameLabel, nameInput, closeButton)

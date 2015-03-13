@@ -74,14 +74,22 @@ do
 		end
 	
 	
+		function Button:doAction()
+			if self.redrawParentOnChange then
+				self.parent:invalidate()
+			end
+			
+			CallEvent(self, "onAction")
+		end
+		
 		function Button:onMouseUp(x, y, onMe)
 			if onMe then
-				CallEvent(self, "onAction")
+				self:doAction()
 			end
 		end
 		
 		function Button:enterKey()
-			CallEvent(self, "onAction")
+			self:doAction()
 		end
 	end
 

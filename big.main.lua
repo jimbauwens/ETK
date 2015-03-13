@@ -18,6 +18,8 @@
 --Lambda style!
 
 
+
+
 --Indexing of strings, string:sub(index, index)
 
 
@@ -1154,7 +1156,7 @@ do
 		self.parent:invalidate()
 	end
 	
-	button2.onAction = (function ( ) return  input1.value = input1.value + 1 end)
+	button2.onAction = (function ( )  input1.value = input1.value + 1 end)
 	
 	
 	function myView:draw(gc, x, y, width, height)

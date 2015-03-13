@@ -87,7 +87,7 @@ do
 	end
 	
 	button2.onAction = λ -> input1.value++;
-	
+	button2.redrawParentOnChange = true
 	
 	function myView:draw(gc, x, y, width, height)
 		Logger.Log("in myView draw")

@@ -518,6 +518,9 @@ do etk.Screen = class()
 		local width, height = self:getDimension()
 		local x, y = self:getPosition()
 		
+		--debug draw bouding boxes
+		--gc:drawRect(x, y, width, height)
+		
 		self:draw(gc, x, y, width, height, eg.isColor)
 		
 		for k, screen in ipairs(self.children) do
@@ -1253,7 +1256,7 @@ do
 	local Label = etk.Widgets.Label
 	local myView = etk.View()
 	
-	
+	--[[
 	local box1 = Box(
 					Position {
                         top  = "50px",
@@ -1284,42 +1287,44 @@ do
 				},
 				Dimension ("50px", "20%"),
 				"Yolo")
+				--]]
 	
 	local button1 = Button {
 		position = Position { bottom  = "2px", right = "2px" },
-		text = "Button1"
+		text = "OK"
 	}
 	
 	local button2 = Button {
 		position = Position { bottom  = "2px", right = "2px", alignment = {{ref=button1, side=Position.Sides.Left}}},
-		text = "Button2"
+		text = "Number+1"
 	}
 	
 	local input1 = Input {
-		position = Position { top  = "2px", left = "2px" },
-		value = 1000
+		position = Position { top  = "2px", right = "2px" },
+		value = 1337
 	}
 	input1.number = true
+	input1.dimension.width = Input.defaultStyle.defaultWidth * 2
+
 
 	local input2 = Input {
-		position = Position { top  = "2px", left = "2px", alignment = {{ref=input1, side=Position.Sides.Bottom}}},
-		value = "this is a test"
+		position = Position { top  = "4px", left = "0px", alignment = {{ref=input1, side=Position.Sides.Bottom},{ref=input1, side=Position.Sides.Left}}},
+		value = "this is an input"
 	}	
-	input2.dimension.width = Input.defaultStyle.defaultWidth * 2
 	
 	local label1 = Label {
-		position = Position { top  = "2px", left = "2px", alignment = {{ref=input1, side=Position.Sides.Right}}},
+		position = Position { top  = "2px", right = "10px", alignment = {{ref=input1, side=Position.Sides.Left}}},
 		text = "This is a label"
 	}
 	
 	local label2 = Label {
-		position = Position { top  = "0px", left = "2px", alignment = {{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Right}}},
+		position = Position { top  = "0px", right = "10px", alignment = {{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Left}}},
 		text = "This is a label"
 	}
 	label2.limit = true
 	label2.dimension = Dimension("30px","20px")
 	
-	myView:addChildren(box1, box2, box3, button1, button2, input1, input2, label1, label2)
+	myView:addChildren(button1, button2, input1, input2, label1, label2)
     	
 	
 	function button2:charIn(char)

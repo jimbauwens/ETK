@@ -139,6 +139,9 @@ do etk.Screen = class()
 		local width, height = self:getDimension()
 		local x, y = self:getPosition()
 		
+		--debug draw bouding boxes
+		--gc:drawRect(x, y, width, height)
+		
 		self:draw(gc, x, y, width, height, eg.isColor)
 		
 		for k, screen in ipairs(self.children) do

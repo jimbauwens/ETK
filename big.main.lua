@@ -1155,7 +1155,7 @@ do
 	
 	local input1 = Input {
 		position = Position { top  = "2px", left = "2px" },
-		value = "1"
+		value = "1000"
 	}
 	input1.disabled = true
 

@@ -939,6 +939,10 @@ do
 		end
 		
 		function Button:draw(gc, x, y, width, height, isColor)
+			if self.meDown then
+				y = y + 1
+			end
+			
 			local color = isColor and 1 or 2
 			local style = self.style
 			
@@ -971,14 +975,28 @@ do
 		end
 	
 	
+		function Button:doAction()
+			if self.redrawParentOnChange then
+				self.parent:invalidate()
+			end
+			
+			CallEvent(self, "onAction")
+		end
+		
+		function Button:onMouseDown()
+			self.meDown = true
+		end
+		
 		function Button:onMouseUp(x, y, onMe)
+			self.meDown = false
+			
 			if onMe then
-				CallEvent(self, "onAction")
+				self:doAction()
 			end
 		end
 		
 		function Button:enterKey()
-			CallEvent(self, "onAction")
+			self:doAction()
 		end
 	end
 
@@ -1157,7 +1175,7 @@ do
 	end
 	
 	button2.onAction = (function ( )  input1.value = input1.value + 1 end)
-	
+	button2.redrawParentOnChange = true
 	
 	function myView:draw(gc, x, y, width, height)
 		Logger.Log("in myView draw")

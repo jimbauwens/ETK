@@ -42,6 +42,10 @@ do
 		end
 		
 		function Button:draw(gc, x, y, width, height, isColor)
+			if self.meDown then
+				y = y + 1
+			end
+			
 			local color = isColor and 1 or 2
 			local style = self.style
 			
@@ -82,7 +86,13 @@ do
 			CallEvent(self, "onAction")
 		end
 		
+		function Button:onMouseDown()
+			self.meDown = true
+		end
+		
 		function Button:onMouseUp(x, y, onMe)
+			self.meDown = false
+			
 			if onMe then
 				self:doAction()
 			end

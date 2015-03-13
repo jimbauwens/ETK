@@ -24,6 +24,7 @@ do etk.RootScreen = {}
 		screen:onPushed(args)
 		
 		table.insert(screens, screen)
+		screen.parent = self
 	end
 	
 	function RootScreen:popScreen(args)
@@ -53,10 +54,11 @@ end
 -- Screen class --
 ------------------
 
-do Screen = class()
+do etk.Screen = class()
+	local Screen = etk.Screen
 	local eg = etk.graphics
 	
-	function Screen:init(parent, position, dimension)
+	function Screen:init(position, dimension)
 		self.parent = parent
 		self.position = position
 		self.dimension = dimension
@@ -82,6 +84,39 @@ do Screen = class()
 		return self.position:get(parentX, parentY, parentWidth, parentHeight, width, height, eg.dimensionsChanged)
 	end
 	
+	function Screen:containsPosition(x, y)
+		local cachedX, cachedY = self.position:getCachedPosition()
+		local cachedWidth, cachedHeight = self.dimension:getCachedDimension()
+			
+		return x >= cachedX and y >= cachedY and x < cachedX + cachedWidth and y < cachedY + cachedHeight
+	end
+	
+	---------------------
+	-- Manage children --
+	---------------------
+	
+	function Screen:addChild(child)
+		table.insert(self.children, child)
+		child.parent = self
+	end
+	
+	function Screen:addChildren(...)
+		for k, child in ipairs{...} do
+			self:addChild(child)		
+		end
+	end
+	
+	----------------
+	-- Invalidate --
+	----------------
+	
+	function Screen:invalidate()
+		local cachedX, cachedY = self.position:getCachedPosition()
+		local cachedWidth, cachedHeight = self.dimension:getCachedDimension()
+		
+		eg.invalidate(cachedX, cachedY, cachedWidth, cachedHeight)
+	end
+	
 	-------------------
 	-- Screen events --
 	-------------------
@@ -99,126 +134,37 @@ do Screen = class()
 	--------------------
 	
 	function Screen:paint(gc)
+		self:prepare(gc)
+		
 		local width, height = self:getDimension()
 		local x, y = self:getPosition()
 		
-		self:draw(gc, x, y, width, height)
+		self:draw(gc, x, y, width, height, eg.isColor)
 		
 		for k, screen in ipairs(self.children) do
-			screen:paint(gc)	
+			screen:paint(gc)
+			
+			-- Reset color to default
+			-- Possibly this should also be done with the pen and the font
+			gc:setColorRGB(0,0,0)
 		end
 		
-		self:postDraw(gc, x, y, width, height)
+		self:postDraw(gc, x, y, width, height, eg.isColor)
 	end
 	
-	function Screen:draw(gc, x, y, width, height)
+	function Screen:prepare(gc)
+		-- use this callback to calculate dimensions
+	end
+	
+	function Screen:draw(gc, x, y, width, height, isColor)
 		-- all drawing should happen here
 		
 		-- called before drawing children
 	end
 	
-	function Screen:postDraw(gc, x, y, width, height)
+	function Screen:postDraw(gc, x, y, width, height, isColor)
 		-- all drawing should happen here
 		
 		-- called after drawing children
-	end
-end
-
-----------------
--- View class --
-----------------
-
-do View = class(Screen)
-	function View:init(args)
-		args = args or {}
-		
-		local parent	= args.parent   or etk.RootScreen
-		local dimension = args.dimension or Dimension()
-		local position  = args.position  or Position()
-		
-		Screen.init(self, parent, position, dimension)
-		
-		self.focusIndex = 0
-	end
-	
-	-----------------
-	-- Focus logic --
-	-----------------
-	
-	function View:switchFocus(direction, isChildView)
-		local children = self.children
-		local focusIndex = self.focusIndex
-		
-		local currentChild = children[focusIndex]
-		local continue = true
-		
-		if currentChild and currentChild.focusIndex then
-			continue = not currentChild:switchFocus(direction, true) -- do we need to handle the focus change
-		end
-		
-		if continue then
-			if currentChild then
-				currentChild:onBlur()	
-			end
-			
-			local nextFocusIndex = focusIndex + direction
-			local childrenCount = #self.children
-			local wrapped = false
-			
-			if nextFocusIndex > childrenCount then
-				nextFocusIndex = 1
-				wrapped = true
-			elseif nextFocusIndex <= 0 then
-				nextFocusIndex = childrenCount
-				wrapped = true
-			end
-			
-			if wrapped and isChildView then
-				return false -- we are not handling the focus change due to wrapping, the parent focus manager needs to handle it
-			else
-				self:giveFocusToChildAtIndex(nextFocusIndex)
-				return true -- we have handled the focus change
-			end
-		end
-	end
-	
-	function View:giveFocusToChildAtIndex(index)
-		self.focusIndex = index
-		local nextChild = self.children[index]
-		
-		if nextChild then
-			nextChild.hasFocus = true
-			nextChild:onFocus()
-		end
-	end
-	
-	function View:getFocusedChild()
-		return self.children[self.focusIndex]
-	end
-	
-	-------------------------------------
-	-- Link tab events to focus change --
-	-------------------------------------
-	
-	function View:tabKey()
-		self:switchFocus(1)
-	end
-	
-	function View:backtabKey()
-		self:switchFocus(-1)
-	end
-	
-	----------------------------------------
-	-- Propagate other events to children --
-	----------------------------------------
-	
-	function View:onEvent(event, eventHandler, ...)
-		Logger.Log("View %q - event %q - eventHandler %q", tostring(self), tostring(event), tostring(eventHandler))
-		
-		local child = self:getFocusedChild()
-		
-		if not eventHandler and child and child[event] then
-			child[event](child, ...)
-		end
 	end
 end

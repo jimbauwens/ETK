@@ -5,7 +5,9 @@
 --define "__LuaVar__" "[%w%._%[%]]+"
 
 --Lambda style!
---define "λ(.-)->(.-);" "(function (%1) return %2 end)"
+--define "λ(.-)->(.-);" "(function (%1) %2 end)"
+--define "λ(.-)=>(.-);" "(function (%1) return %2 end)"
+
 
 --Indexing of strings, string[~index]
 --define "(%w+)%[%~(%w+)%]" "%1:sub(%2, %2)"

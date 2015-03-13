@@ -25,10 +25,10 @@ local c = 84
 c>>=1
 print(21<<1, c)
 
-newStringA = myString:gsub("(.)", λ x -> x..x;)
+newStringA = myString:gsub("(.)", λ x => x..x;)
 print(newStringA)
 
-newStringB = myString:gsub("()", λ x -> myString[~x];) 
+newStringB = myString:gsub("()", λ x => myString[~x];) 
 print(newStringB)
 
 print("ETK")

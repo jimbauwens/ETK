@@ -14,6 +14,8 @@ do
 	eg.needsFullRedraw = true
 	eg.dimensionsChanged = true
 	
+	eg.isColor = platform.isColorDisplay()
+	
 	eg.viewPortWidth  = 318
 	eg.viewPortHeight = 212
 	
@@ -40,14 +42,15 @@ do
 	
 	local clipRectData	= {}
 	local clipRects = 0
-	local old = clipRectData[clipRects]
 	
 	local gc_clipRect = function (gc, what, x, y, w, h)
 		if what == "set"  then
 			clipRects = clipRects + 1
 			clipRectData[clipRects] = {x, y, w, h}
 						
-		elseif what == "subset" and old then
+		elseif what == "subset" and clipRects > 0 then
+			local old  = clipRectData[clipRects]
+			
 			x	= old[1] < x and x or old[1]
 			y	= old[2] < y and y or old[2]
 			h	= old[2] + old[4] > y + h and h or old[2] + old[4] - y
@@ -58,18 +61,19 @@ do
 			clipRects = clipRects + 1
 			clipRectData[clipRects] = {x, y, w, h}
 			
-		elseif what == "restore" and old then
+		elseif what == "restore" and clipRects > 0 then
 			what = "set"
-			x, y, w, h = old[1], old[2], old[3], old[4]
 			
 			clipRectData[clipRects] = nil
 			clipRects = clipRects - 1
 			
+			local old  = clipRectData[clipRects]
+			x, y, w, h = old[1], old[2], old[3], old[4]
+			
 		elseif what == "restore" then
 			what = "reset"
-			
 		end
-		
+			
 		gc:clipRect(what, x, y, w, h)
 	end
 	
@@ -81,7 +85,7 @@ do
 		platform.withGC = function (func, ...)
 			local gc = platform.gc()
 			gc:begin()
-			func(..., gc)
+			func(..., gc) -- BUG: if you have a parameter after ..., you will only select the first parameter from the list, <- func({...}[1], gc)
 		end
 	end
 	
@@ -92,7 +96,6 @@ do
 	local addToGC = function (name, func)
 		local gcMeta = platform.withGC(getmetatable)
 		gcMeta[name] = func
-		-- It's that simple!
 	end
 	
 	------------------------

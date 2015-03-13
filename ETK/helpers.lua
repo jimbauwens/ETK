@@ -39,7 +39,7 @@ end
 
 do UnitCalculator = {}
     UnitCalculator.GetAbsoluteValue = function (value, referenceValue)
-        local numberValue, unit = string.match(tostring(value), "([%d.]+)(.*)")
+        local numberValue, unit = string.match(tostring(value), "([-%d.]+)(.*)")
         
         local number = tonumber(numberValue)
         
@@ -75,9 +75,21 @@ do Dimension = class()
 			
 			return self.cachedWidth, self.cachedHeight
 		else
+			self.cachedWidth = parentWidth
+			self.cachedHeight = parentHeight
+			
 			return parentWidth, parentHeight
 		end
     end
+	
+	function Dimension:getCachedDimension()
+		return self.cachedWidth or 0, self.cachedHeight or 0
+	end
+	
+	function Dimension:invalidate()
+		self.cachedWidth = nil
+		self.cachedHeight = nil
+	end
 end
 
 do Position = class()
@@ -109,6 +121,14 @@ do Position = class()
 			local originX = parentX
 			local originY = parentY
 			
+			if self.right then
+				originX = originX + parentWidth
+			end
+			
+			if self.bottom then
+				originY = originY + parentHeight
+			end
+			
 			for _, alignment in ipairs(self.alignment) do
 				local side = alignment.side
 				local ref = alignment.ref
@@ -129,15 +149,15 @@ do Position = class()
 			end
 			
 			if self.left then
-				x = originX + self.left
+				x = originX + UnitCalculator.GetAbsoluteValue(self.left, parentWidth)
 			elseif self.right then
-				x = originX - self.right - width
+				x = originX - UnitCalculator.GetAbsoluteValue(self.right, parentWidth) - width
 			end
-			
+						
 			if self.top then
-				y = originY + self.top
+				y = originY + UnitCalculator.GetAbsoluteValue(self.top, parentHeight)
 			elseif self.bottom then
-				y = originY - self.bottom - height
+				y = originY - UnitCalculator.GetAbsoluteValue(self.bottom, parentHeight) - height
 			end
 			
 			self.cachedX = x
@@ -146,5 +166,34 @@ do Position = class()
 		
         return self.cachedX, self.cachedY
     end
+	
+	function Position:invalidate()
+		self.cachedX = nil
+		self.cachedY = nil
+	end
+	
+	function Position:getCachedPosition()
+		return self.cachedX or 0, self.cachedY or 0
+	end
     
+end
+
+-----------
+-- Color --
+-----------
+
+local function unpackColor(col)
+	return col[1] or 0, col[2] or 0, col[3] or 0
+end
+
+-------------------
+-- Event calling --
+-------------------
+
+local CallEvent = function(object, event, ...)
+	local handler = object[event]
+	
+	if handler then
+		return handler, handler(object, ...)
+	end
 end

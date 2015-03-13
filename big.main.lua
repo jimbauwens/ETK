@@ -1147,6 +1147,100 @@ end
 -- End of etk/widgets/input.lua --
 ----------------------------------
 
+------------------------------------
+-- Start of etk/widgets/label.lua --
+------------------------------------
+
+-----------
+-- Label --
+-----------
+
+do
+	local Widget  = etk.Widget
+	local Widgets = etk.Widgets
+	
+	do Widgets.Label = class(Widget)
+		local Widget = etk.Widget
+		local Label = Widgets.Label
+		
+		Label.defaultStyle = {
+			textColor       = {{000,000,000},{000,000,000}},
+			--backgroundColor = {{248,252,248},{248,252,248}},
+			
+			defaultWidth = 20,
+			defaultHeight = 30,
+			
+			font = {
+				serif="sansserif",
+				style="r",
+				size=10
+			}
+		}
+		
+		function Label.TextPart(gc, text, max)
+			local out = ""
+			
+			local width	= gc:getStringWidth(text)
+			
+			if width < max then
+				return text
+			else
+				for i=1, #text do
+					local part = text:usub(1, i)
+					if gc:getStringWidth(part .. "..") > max then
+						break
+					end
+					out = part
+				end
+				
+				return out .. ".."
+			end
+		end
+	
+		function Label:init(arg)	
+			self.text = arg.text or "Button"
+			
+			local style = arg.style or Label.defaultStyle
+			self.style = style
+			self.limit = false
+			self.ignoreFocus = true
+			
+			local dimension = Dimension(style.defaultWidth, style.defaultHeight)
+			
+			Widget.init(self, arg.position, dimension)
+		end
+		
+		function Label:prepare(gc)
+			local font = self.style.font
+			
+			gc:setFont(font.serif, font.style, font.size)
+			
+			if not self.limit then
+				self.dimension.width = gc:getStringWidth(self.text)
+				self.dimension.height = gc:getStringHeight(self.text)
+				
+				self.dimension:invalidate()
+				self.position:invalidate()
+			end
+		end
+		
+		function Label:draw(gc, x, y, width, height, isColor)
+			local color = isColor and 1 or 2
+			local style = self.style
+						
+			gc:setColorRGB(unpackColor(style.textColor[color]))
+			
+			local displayText = self.limit and Label.TextPart(gc, self.text, width) or self.text
+			
+			gc:drawString(displayText, x, y, "top")
+		end
+	end
+
+end
+----------------------------------
+-- End of etk/widgets/label.lua --
+----------------------------------
+
 ----------------------------------
 -- End of etk/widgetmanager.lua --
 ----------------------------------
@@ -1156,6 +1250,7 @@ end
 do
 	local Button = etk.Widgets.Button
 	local Input = etk.Widgets.Input
+	local Label = etk.Widgets.Label
 	local myView = etk.View()
 	
 	
@@ -1208,11 +1303,23 @@ do
 
 	local input2 = Input {
 		position = Position { top  = "2px", left = "2px", alignment = {{ref=input1, side=Position.Sides.Bottom}}},
-		value = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		value = "this is a test"
 	}	
 	input2.dimension.width = Input.defaultStyle.defaultWidth * 2
 	
-	myView:addChildren(box1, box2, box3, button1, button2, input1, input2)
+	local label1 = Label {
+		position = Position { top  = "2px", left = "2px", alignment = {{ref=input1, side=Position.Sides.Right}}},
+		text = "This is a label"
+	}
+	
+	local label2 = Label {
+		position = Position { top  = "0px", left = "2px", alignment = {{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Right}}},
+		text = "This is a label"
+	}
+	label2.limit = true
+	label2.dimension = Dimension("30px","20px")
+	
+	myView:addChildren(box1, box2, box3, button1, button2, input1, input2, label1, label2)
     	
 	
 	function button2:charIn(char)

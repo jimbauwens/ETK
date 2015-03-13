@@ -21,6 +21,7 @@ end
 do
 	local Button = etk.Widgets.Button
 	local Input = etk.Widgets.Input
+	local Label = etk.Widgets.Label
 	local myView = etk.View()
 	
 	
@@ -77,7 +78,19 @@ do
 	}	
 	input2.dimension.width = Input.defaultStyle.defaultWidth * 2
 	
-	myView:addChildren(box1, box2, box3, button1, button2, input1, input2)
+	local label1 = Label {
+		position = Position { top  = "2px", left = "2px", alignment = {{ref=input1, side=Position.Sides.Right}}},
+		text = "This is a label"
+	}
+	
+	local label2 = Label {
+		position = Position { top  = "0px", left = "2px", alignment = {{ref=input2, side=Position.Sides.Top},{ref=input2, side=Position.Sides.Right}}},
+		text = "This is a label"
+	}
+	label2.limit = true
+	label2.dimension = Dimension("30px","20px")
+	
+	myView:addChildren(box1, box2, box3, button1, button2, input1, input2, label1, label2)
     	
 	
 	function button2:charIn(char)

@@ -51,3 +51,4 @@ end
 
 --include "widgets/button.lua"
 --include "widgets/input.lua"
+--include "widgets/label.lua"

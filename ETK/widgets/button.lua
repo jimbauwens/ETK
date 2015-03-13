@@ -79,10 +79,7 @@ do
 	
 	
 		function Button:doAction()
-			if self.redrawParentOnChange then
-				self.parent:invalidate()
-			end
-			
+			self.parent:invalidate()
 			CallEvent(self, "onAction")
 		end
 		

@@ -976,10 +976,7 @@ do
 	
 	
 		function Button:doAction()
-			if self.redrawParentOnChange then
-				self.parent:invalidate()
-			end
-			
+			self.parent:invalidate()
 			CallEvent(self, "onAction")
 		end
 		
@@ -1073,9 +1070,11 @@ do
 				gc:setColorRGB(unpackColor(style.focusColor[color]))
 			end
 			
-			local text	=	self.value
-			if self.value == ""  then
-				text = self.placeholder or ""
+			local value = tostring(self.value)
+			local text = value
+			
+			if value == "" or value == 0 then
+				text = self.placeholder or value
 			end
 			
 			local strWidth = gc:getStringWidth(text)
@@ -1086,11 +1085,59 @@ do
 				gc:drawString(text, x - 4 + width - strWidth, y + 1, "top")
 			end
 			
-			if self.hasFocus and self.value ~= "" then
-				gc:fillRect(x + (text == self.value and strWidth + 2 or width - 4), y, 1, height)
+			if self.hasFocus and value ~= "" then
+				gc:fillRect(x + (text == value and strWidth + 2 or width - 4), y, 1, height)
 			end
 			
 			gc:smartClipRect("restore")
+		end
+	
+		------------------------
+		-- Handle input event --
+		------------------------
+		
+		function Input:doValueChange()
+			CallEvent(self, "onValueChange", self.value)
+		end
+	
+		function Input:charIn(char)
+			print("wtf")
+			local newValue = self.value .. char
+			
+			if self.number then
+				newValue = tonumber(newValue)
+			end
+			
+			if self.disabled or not newValue then
+				return
+			end
+			
+			self.value = newValue
+			self:doValueChange()
+			
+			self.parent:invalidate()
+		end
+		
+		function Input:clearKey()
+			self.value = self.number and 0 or ""
+			self:doValueChange()
+			self.parent:invalidate()
+		end
+		
+		function Input:backspaceKey()
+			if not self.disabled then
+				local newValue = tostring(self.value):usub(1,-2)
+				
+				if self.number then
+					newValue = tonumber(newValue)
+				end
+				
+				if newValue then
+					self.value = newValue
+				else
+					self.value = self.number and 0 or ""
+				end
+			end
 		end
 	
 	end
@@ -1155,9 +1202,9 @@ do
 	
 	local input1 = Input {
 		position = Position { top  = "2px", left = "2px" },
-		value = "1000"
+		value = 1000
 	}
-	input1.disabled = true
+	input1.number = true
 
 	local input2 = Input {
 		position = Position { top  = "2px", left = "2px", alignment = {{ref=input1, side=Position.Sides.Bottom}}},
@@ -1175,7 +1222,6 @@ do
 	end
 	
 	button2.onAction = (function ( )  input1.value = input1.value + 1 end)
-	button2.redrawParentOnChange = true
 	
 	function myView:draw(gc, x, y, width, height)
 		Logger.Log("in myView draw")

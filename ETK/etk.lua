@@ -67,13 +67,13 @@ do
 	
 	local input1 = Input {
 		position = Position { top  = "2px", left = "2px" },
-		value = "1000"
+		value = 1000
 	}
-	input1.disabled = true
+	input1.number = true
 
 	local input2 = Input {
 		position = Position { top  = "2px", left = "2px", alignment = {{ref=input1, side=Position.Sides.Bottom}}},
-		value = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		value = "this is a test"
 	}	
 	input2.dimension.width = Input.defaultStyle.defaultWidth * 2
 	
@@ -87,7 +87,6 @@ do
 	end
 	
 	button2.onAction = λ -> input1.value++;
-	button2.redrawParentOnChange = true
 	
 	function myView:draw(gc, x, y, width, height)
 		Logger.Log("in myView draw")

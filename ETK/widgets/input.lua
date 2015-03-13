@@ -26,7 +26,7 @@ do
 		}
 		
 		function Input:init(arg)	
-			self.value = arg.value or "Button"
+			self.value = arg.value or ""
 			self.disabled = arg.disabled
 			
 			local style = arg.style or Input.defaultStyle

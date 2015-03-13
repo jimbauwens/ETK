@@ -28,9 +28,10 @@ do etk.RootScreen = {}
 	end
 	
 	function RootScreen:popScreen(args)
-		screen:onPopped(args)
+		local index = #screens
+		screens[index]:onPopped(args)
 		
-		return table.remove(screens)
+		return table.remove(screens, index)
 	end
 	
 	function RootScreen:peekScreen()
@@ -47,7 +48,25 @@ do etk.RootScreen = {}
 	
 	function RootScreen:getPosition()
 		return x, y
-	end	
+	end
+	
+	-------------------
+	-- Draw children --
+	-------------------
+		
+	function RootScreen:paint(gc)
+		for k, screen in ipairs(self.screens) do
+			screen:paint(gc)
+		end
+	end
+	
+	----------------
+	-- Invalidate --
+	----------------
+	
+	function RootScreen:invalidate()
+		eg.invalidate()
+	end
 end
 
 ------------------

@@ -123,7 +123,7 @@ do etk.View = class(etk.Screen)
 		
 		if lastChildIndex then
 			local lastChild = self.children[lastChildIndex]
-			if lastChild:containsPosition(x, y) then
+			if lastChild and lastChild:containsPosition(x, y) then
 				return lastChildIndex, lastChild
 			end
 		end

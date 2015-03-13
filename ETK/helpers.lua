@@ -48,7 +48,15 @@ do UnitCalculator = {}
              return 0
         end
         
-        if unit == "%" then
+		local isPercent = unit == "%"
+		
+		if number < 0 then
+			print(number, "from")
+			number = (isPercent and 100 or referenceValue) + number
+			print(number, "to")
+		end
+		
+        if isPercent then
             return referenceValue / 100 * number
         else
            return number

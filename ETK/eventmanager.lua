@@ -76,7 +76,8 @@ do
 	on.paint = function(gc)
 		gc:smartClipRect("set", 0, 0, eg.viewPortWidth, eg.viewPortHeight)
 
-		eventLinker.__index(on, "paint")(gc)
+		--eventLinker.__index(on, "paint")(gc)
+		rs:paint(gc, 0, 0, eg.viewPortWidth, eg.viewPortHeight)
 		
 		eg.dimensionsChanged = false
 	end

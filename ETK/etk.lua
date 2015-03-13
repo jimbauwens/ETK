@@ -16,6 +16,7 @@ do
 	--include "viewmanager.lua"
 	--include "eventmanager.lua"
 	--include "widgetmanager.lua"
+	--include "dialog.lua"
 end
 
 do
@@ -108,6 +109,26 @@ do
 	end
 	
 	
+	button1.onAction = function ()
+		local dialog = etk.Dialog("Test Dialog", Position {top="40px", left="20px"}, Dimension("-40px", "-80px"))
+		
+		local nameLabel = Label {position = Position { top  = "30px", left = "4px"}, text="Name: "}
+		local nameInput = Input {position = Position { top  = "30px", left = "50px"}}
+		nameInput.dimension.width = "-54px"
+			
+		local closeButton = Button {
+			position = Position { bottom  = "4px", right = "4px" },
+			text = "Close"
+		}
+		closeButton.onAction = function()
+			input2.value = "Hi " .. nameInput.value
+			etk.RootScreen.popScreen();
+		end
+		
+		dialog:addChildren(nameLabel, nameInput, closeButton)
+		
+		etk.RootScreen:pushScreen(dialog)
+	end
 	
 	etk.RootScreen:pushScreen(myView)
 end

@@ -104,7 +104,15 @@ do UnitCalculator = {}
              return 0
         end
         
-        if unit == "%" then
+		local isPercent = unit == "%"
+		
+		if number < 0 then
+			print(number, "from")
+			number = (isPercent and 100 or referenceValue) + number
+			print(number, "to")
+		end
+		
+        if isPercent then
             return referenceValue / 100 * number
         else
            return number
@@ -407,9 +415,10 @@ do etk.RootScreen = {}
 	end
 	
 	function RootScreen:popScreen(args)
-		screen:onPopped(args)
+		local index = #screens
+		screens[index]:onPopped(args)
 		
-		return table.remove(screens)
+		return table.remove(screens, index)
 	end
 	
 	function RootScreen:peekScreen()
@@ -426,7 +435,25 @@ do etk.RootScreen = {}
 	
 	function RootScreen:getPosition()
 		return x, y
-	end	
+	end
+	
+	-------------------
+	-- Draw children --
+	-------------------
+		
+	function RootScreen:paint(gc)
+		for k, screen in ipairs(self.screens) do
+			screen:paint(gc)
+		end
+	end
+	
+	----------------
+	-- Invalidate --
+	----------------
+	
+	function RootScreen:invalidate()
+		eg.invalidate()
+	end
 end
 
 ------------------
@@ -683,7 +710,7 @@ do etk.View = class(etk.Screen)
 		
 		if lastChildIndex then
 			local lastChild = self.children[lastChildIndex]
-			if lastChild:containsPosition(x, y) then
+			if lastChild and lastChild:containsPosition(x, y) then
 				return lastChildIndex, lastChild
 			end
 		end
@@ -828,7 +855,8 @@ do
 	on.paint = function(gc)
 		gc:smartClipRect("set", 0, 0, eg.viewPortWidth, eg.viewPortHeight)
 
-		eventLinker.__index(on, "paint")(gc)
+		--eventLinker.__index(on, "paint")(gc)
+		rs:paint(gc, 0, 0, eg.viewPortWidth, eg.viewPortHeight)
 		
 		eg.dimensionsChanged = false
 	end
@@ -1037,7 +1065,7 @@ do
 		}
 		
 		function Input:init(arg)	
-			self.value = arg.value or "Button"
+			self.value = arg.value or ""
 			self.disabled = arg.disabled
 			
 			local style = arg.style or Input.defaultStyle
@@ -1248,6 +1276,64 @@ end
 -- End of etk/widgetmanager.lua --
 ----------------------------------
 
+	-----------------------------
+-- Start of etk/dialog.lua --
+-----------------------------
+
+do
+	local View = etk.View
+	
+	do etk.Dialog = class(View)
+		local Dialog = etk.Dialog
+		
+		function Dialog:invalidate()
+			self.parent:invalidate()
+		end
+		
+		function Dialog:init(title, position, dimension)
+			self.title = title
+			
+			View.init(self, {position=position, dimension=dimension})
+		end
+		
+		function Dialog:draw(gc,x, y, width, height)
+			gc:setFont("sansserif", "r", 10)
+			gc:setColorRGB(224, 224, 224)
+			
+			gc:fillRect(x, y, width, height)
+		
+			for i=1, 14, 2 do
+				gc:setColorRGB(32+i*3, 32+i*4, 32+i*3)
+				gc:fillRect(x, y + i, width, 2)
+			end
+			
+			gc:setColorRGB(32+16*3, 32+16*4, 32+16*3)
+			gc:fillRect(x, y+15, width, 10)
+			
+			gc:setColorRGB(128,128,128)
+			gc:drawRect(x, y, width, height)
+			gc:drawRect(x-1, y-1, width+2, height+2)
+			
+			gc:setColorRGB(96, 100, 96)
+			gc:fillRect(x+width+1, y, 1, height+2)
+			gc:fillRect(x, y+height+2, width+3, 1)
+			
+			gc:setColorRGB(104, 108, 104)
+			gc:fillRect(x+width+2, y+1, 1, height+2)
+			gc:fillRect(x+1, y+height+3, width+3, 1)
+			gc:fillRect(x+width+3, y+2, 1, height+2)
+			gc:fillRect(x+2, y+height+4, width+2, 1)
+					
+			gc:setColorRGB(255, 255, 255)
+			gc:drawString(self.title, x+4, y+2, "top")
+		end
+	end
+
+end
+---------------------------
+-- End of etk/dialog.lua --
+---------------------------
+
 end
 
 do
@@ -1340,6 +1426,26 @@ do
 	end
 	
 	
+	button1.onAction = function ()
+		local dialog = etk.Dialog("Test Dialog", Position {top="40px", left="20px"}, Dimension("-40px", "-80px"))
+		
+		local nameLabel = Label {position = Position { top  = "30px", left = "4px"}, text="Name: "}
+		local nameInput = Input {position = Position { top  = "30px", left = "50px"}}
+		nameInput.dimension.width = "-54px"
+			
+		local closeButton = Button {
+			position = Position { bottom  = "4px", right = "4px" },
+			text = "Close"
+		}
+		closeButton.onAction = function()
+			input2.value = "Hi " .. nameInput.value
+			etk.RootScreen.popScreen();
+		end
+		
+		dialog:addChildren(nameLabel, nameInput, closeButton)
+		
+		etk.RootScreen:pushScreen(dialog)
+	end
 	
 	etk.RootScreen:pushScreen(myView)
 end

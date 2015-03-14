@@ -176,9 +176,10 @@ do etk.View = class(etk.Screen)
 		
 		local child = self:getFocusedChild()
 		
-		if not eventHandler and child then
-			local handler = CallEvent(child, event, ...)
-			CallEvent(child, "onEvent", event, handler, ...)
+		--if not eventHandler and child then -- TODO: ADD event propogation block support
+		if child then
+			CallEvent(child, "onEvent", event, child[event], ...)
+			CallEvent(child, event, ...)
 		end
 	end
 end

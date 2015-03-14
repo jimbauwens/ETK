@@ -763,9 +763,10 @@ do etk.View = class(etk.Screen)
 		
 		local child = self:getFocusedChild()
 		
-		if not eventHandler and child then
-			local handler = CallEvent(child, event, ...)
-			CallEvent(child, "onEvent", event, handler, ...)
+		--if not eventHandler and child then -- TODO: ADD event propogation block support
+		if child then
+			CallEvent(child, "onEvent", event, child[event], ...)
+			CallEvent(child, event, ...)
 		end
 	end
 end
@@ -817,13 +818,13 @@ do
 		local currentScreen = rs:peekScreen()
 		local eventHandler = currentScreen[triggeredEvent]
 		
-		if eventHandler then
-			eventHandler(currentScreen, ...)
-		end
-		
 		local genericEventHandler = currentScreen.onEvent
 		if genericEventHandler then
 			genericEventHandler(currentScreen, triggeredEvent, eventHandler, ...)
+		end
+		
+		if eventHandler then
+			eventHandler(currentScreen, ...)
 		end
 	end
 	
@@ -1425,7 +1426,6 @@ do
 		Logger.Log("in myView draw")
 	end
 	
-	
 	button1.onAction = function ()
 		local dialog = etk.Dialog("Test Dialog", Position {top="40px", left="20px"}, Dimension("-40px", "-80px"))
 		
@@ -1439,12 +1439,20 @@ do
 		}
 		closeButton.onAction = function()
 			input2.value = "Hi " .. nameInput.value
-			etk.RootScreen.popScreen();
+			etk.RootScreen:popScreen();
 		end
 		
 		dialog:addChildren(nameLabel, nameInput, closeButton)
 		
 		etk.RootScreen:pushScreen(dialog)
+	end
+	
+	function myView:enterKey()
+		print("Enterkey myView")
+	end
+	
+	function input1:enterKey()
+		print("Enterkey input1")
 	end
 	
 	etk.RootScreen:pushScreen(myView)

@@ -108,7 +108,6 @@ do
 		Logger.Log("in myView draw")
 	end
 	
-	
 	button1.onAction = function ()
 		local dialog = etk.Dialog("Test Dialog", Position {top="40px", left="20px"}, Dimension("-40px", "-80px"))
 		
@@ -128,6 +127,14 @@ do
 		dialog:addChildren(nameLabel, nameInput, closeButton)
 		
 		etk.RootScreen:pushScreen(dialog)
+	end
+	
+	function myView:enterKey()
+		print("Enterkey myView")
+	end
+	
+	function input1:enterKey()
+		print("Enterkey input1")
 	end
 	
 	etk.RootScreen:pushScreen(myView)

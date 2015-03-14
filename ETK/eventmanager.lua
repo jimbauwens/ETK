@@ -38,13 +38,13 @@ do
 		local currentScreen = rs:peekScreen()
 		local eventHandler = currentScreen[triggeredEvent]
 		
-		if eventHandler then
-			eventHandler(currentScreen, ...)
-		end
-		
 		local genericEventHandler = currentScreen.onEvent
 		if genericEventHandler then
 			genericEventHandler(currentScreen, triggeredEvent, eventHandler, ...)
+		end
+		
+		if eventHandler then
+			eventHandler(currentScreen, ...)
 		end
 	end
 	
